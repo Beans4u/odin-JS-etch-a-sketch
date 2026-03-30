@@ -134,11 +134,12 @@ const `drawingScreen` = DOC DIV `"drawing-screen"`
 const `customGridSize` = DOC INPUT `"custom-grid-size"`  
 const `btnCustomGridSize` = DOC BUTTON `"btn-custom-grid-size"`
 const `btnMulticolorToggle` = DOC BUTTON `"btn-multicolor-toggle"`
+const `btnShakeToy` = DOC BUTTON `"btn-shake-toy"`
 const `toggleMulticolorText` = DOC PARAGRAPH `"toggle-multicolor-text"`
 
 **For rows that are 16 divs across**  
 const `DEFAULT_GRID_SIZE` = whatever value makes a 16 x 16 grid.
-let `customGridValue` = 0
+let `activeGridSize` = 0
 (will be updated by EVENT LISTENER for `customGridSize` so that it can be used to "shake" the toy in the Shake Screen EVENT LISTENER, and erase the drawing while keeping the custom grid in place)
 
 **Note on calc for `DEFAULT_GRID_SIZE`:**  
@@ -232,9 +233,9 @@ BUTTON `"btn-multicolor-toggle"`
 BUTTON`"btn-shake-toy"`  
 (reset the image, shake animation?)
 
-BOOL `multicolorActive` = FALSE
+BOOL `isMulticolor` = FALSE
 
-## PSEUDOCODE: LOGIC
+## - - - - - - - - - - - PSEUDOCODE: LOGIC - - - - - - - - - - -
 
 ### CONSTRAIN GRID SIZE (to equal height and width)
 
@@ -254,9 +255,7 @@ FUNCTION `calculateDivHeight` (PARAMETER `gridSize`)
         MAGIC CALCULATION: height % required for Flexbox to place `gridSize` number of DIVs in one row of `drawingScreen` (is either user input or default value)
         ANTI-MAGIC: I found a formula. It is the length of the container `screenPixels` divided by the `gridSize`. Need to figure out how big container should be. I will figure that out during implementation so I can see it clearly.
 
-        where `x` = `screenPixel` width in px:
-
-        RETURN result as INT: `toINT`( `x` / `gridSize` )
+        RETURN result as INT: `toINT`( [[container height]] / `gridSize` )
 
 END OF FUNCTION
 ```
@@ -291,7 +290,7 @@ FUNCTION generatePixels (PARAMETER `newGridSize` = default value is `DEFAULT_GRI
 
     const `gridSize` = `newGridSize`
 
-    const `divHeight` = INVOKE FUNCTION `calculateDivHeight`(PARAMETER `gridSize`)
+    const `divHeight` = FUNCTION CALL `calculateDivHeight`(PARAMETER `gridSize`)
 
     give `"drawingScreen"` a style height of `divHeight`
 
@@ -306,17 +305,22 @@ FUNCTION generatePixels (PARAMETER `newGridSize` = default value is `DEFAULT_GRI
 END OF FUNCTION
 ```
 
-#### **---JS: Delete Generated Pixels---**
+### REMOVE DIVS FROM SCREEN
+
+**Purpose: Removes DIV children from screenPixels when the user creates a custom grid size, handled by the `handleCustomGridSize` EVENT**
+
+**Variables**
+`screenPixels`
 
 ```JS
-FUNCTION removePixels(screenPixels) {
+FUNCTION removePixels(`screenPixels`) {
     LOOP
-        for each screenPixel, element remove from DOM
+        for each `screenPixel`, element remove from DOM
     END LOOP
     // what if that takes up too many resources?
 
     LOOP
-        element.removeChild(screenPixels)
+        element.removeChild(`screenPixels`)
         // yesssss, excellent.
     END LOOP
 }
@@ -344,7 +348,9 @@ FUNCTION removePixels(screenPixels) {
 }
 ```
 
-### PSEUDOCODE: THINKING ABOUT COLOURS (LOGIC)
+### PSEUDOCODE: MULTICOLOUR LOGIC
+
+**Purpose: Changes from limited range of colours, returns colour code to be used by `generatePixels`.**
 
 I want to constrain the "random" colours to a theme containing colours I select myself, for aesthetic appeal, rather than just using all 256 colours of the rbg spread. I think I can achieve this by reusing a piece of code I used in my [Rock Paper Scissors project](https://github.com/Beans4u/odin-JS-rockPaperScissors/blob/main/script.js).
 
@@ -390,10 +396,9 @@ FUNCTION getColors(){
         }
 } END of FUNCTION
 
-
 ```
 
-## PSEUDOCODE: EVENTS
+## - - - - - - - - - - - PSEUDOCODE: EVENTS - - - - - - - - - - -
 
 ### CUSTOM GRID SIZE
 
@@ -410,19 +415,17 @@ Resize DIVs for Drawing Screen grid from INPUT
 
 GLOBAL:  
 const `customGridSize` = DOC INPUT `"custom-grid-size"`
-let `customGridValue` = 0
-(will be updated by EVENT LISTENER for `customGridSize` so that it can be used to "shake" the toy in the Shake Screen EVENT LISTENER, and erase the drawing while keeping the custom grid in place)
+let `activeGridSize` = 0
+(will be updated by EVENT LISTENER for `customGridSize` so that it can be used to "shake" the toy in the Shake Screen EVENT LISTENER, and erase the drawing while keeping the current grid in place)
 
 **Event Listener**
 
 #### JS - send user input to `generatePixels`
 
 ```JS
-EVENT LISTENER for INPUT customGridSize (SUBMIT/CHANGE (PARAMETER `event`))
-    const `newGridSize` = event.target.value
+EVENT LISTENER for INPUT customGridSize (SUBMIT/CHANGE FUNCTION `handleCustomGridSize`(PARAMETER `event`))
+    const `newGridSize` = +event.target.value
     // (convert to number with +, returns NaN if invalid number)
-    let `customGridSize` = `newGridSize`
-    // (this is a global variable that will remember the user's grid size for shaking the toy)
 
     IF `newGridSize` is isNaN (syntax: isNaN(`newGridSize`))
         RETURN error message containing value of `newGridSize`
@@ -430,25 +433,14 @@ EVENT LISTENER for INPUT customGridSize (SUBMIT/CHANGE (PARAMETER `event`))
         RETURN error message stating the grid size must be between 4 and 100, display value received
     END of IF STATEMENT
 
+    let `customGridSize` = `newGridSize`
+    // (this is a global variable that will remember the user's grid size for shaking the toy)
+    // moved beneath IF statement for better code economy
+
     FUNCTION CALL `removePixels`()
     FUNCTION CALL `generatePixels`(PARAMETER `newGridSize`)
 
-END OF EVENT LISTENER
-```
-
-### PSEUDOCODE: THINKING ABOUT COLOURS (LOGIC)
-
-**Global variable (must be used after grid is generated):**
-const `screenPixels` = DOC DIV `"drawing-screen"`  
-(need to figure this out: children as OBJECT using querySelectorAll? Or should I run a FOR EACH that gives them all a class which is then used to assign them for the class query selector to this variable?)
-
-```JS
-EVENT LISTENER for DIV `screenPixels` (MOUSE ENTER, ()){
-
-        LET `colorPixel` = FUNCTION CALL `getColours`(`screenPixels`)
-        LET `randomColor` = `getColors()`
-        change `screenPixels` style backgroundColor to `randomColor`
-}
+END OF FUNCTION AND EVENT LISTENER
 ```
 
 ### TOGGLE MULTICOLOR
@@ -456,12 +448,12 @@ EVENT LISTENER for DIV `screenPixels` (MOUSE ENTER, ()){
 Purpose:
 
 1. on click, makes the pixels paint in colour instead of greyscale
-2. event changes multicolorActive bool to TRUE
+2. event changes `isMulticolor` bool to TRUE
 
-The event listener for painting the pixels will check the bool and paint greyscale/multicolor on multicolorActive state of false/true respectively.
+The event listener for painting the pixels will check the bool and paint greyscale/multicolor on `isMulticolor` state of false/true respectively.
 
 **Global Variables**  
-`multicolorActive`  
+`isMulticolor`  
 (if FALSE, paints greyscale, if TRUE, paints multicolour)
 
 `btnMulticolorToggle`
@@ -471,49 +463,29 @@ The event listener for painting the pixels will check the bool and paint greysca
 (DOM node - paragraph, change text on toggle)
 
 ```JS
-EVENT LISTENER for DIV `btnMulticolorToggle` (CLICK, (PARAMETER `event`))
+EVENT LISTENER for DIV `btnMulticolorToggle`(CLICK, FUNCTION `handleToggleMulticolor`(PARAMETER `event`))
     // MAGIC: We figure out how to toggle between changing pixels grey to multicolor. Possibly by changing classes the div is assinged to?
 
     // No! I'll assign it to a global variable.
 
-    IF (event.target is clicked)
-        change `multicolorActive` to TRUE
+    IF (`isMulticolor` is FALSE)
+        change `isMulticolor` to TRUE
+        // I still need to update the DOM for toggle switching.
+        `btnMulticolorToggle` change button or div text to "Toggle Greyscale"
+
+    ELSE
+        change `isMulticolor` to FALSE
+        `btnMulticolorToggle` change button or div text to "Toggle Multicolor"
     END OF IF STATEMENT
     // right?
-
-    // I still need to update the DOM for toggle switching.
-    `btnMulticolorToggle` change button or div text to "Toggle Greyscale"
-
-```
-
-### TOGGLE GREYSCALE
-
-Purpose:
-
-1. on click, makes the pixels paint in colour instead of greyscale
-2. event changes `multicolorActive` bool to FALSE
-
-**Global Variables**  
-`multicolorActive`  
-(if FALSE, paints greyscale, if TRUE, paints multicolour)
-
-```JS
-EVENT LISTENER for DIV `btnMulticolorToggle` (CLICK, (PARAMETER `event`))
-    // MAGIC: We figure out how to toggle between changing pixels grey to multicolor. Possibly by changing classes the div is assinged to?
-
-    // No! I'll assign it to a global variable.
-
-    IF (event.target is clicked)
-        change `multicolorActive` to FALSE
-    END OF IF STATEMENT
-    // right?
+END of FUNCTION and EVENT LISTENER
 ```
 
 ### PAINT PIXELS
 
 **Purpose:**
 
-1. cause screenPixel child DIVs to become slightly more opaque on mouse in event
+1. cause `screenPixel` child DIVs to become slightly more opaque on mouse in event
 2. apply multicolour or greyscale background colour to DIV on mouse in
 
 **Global variables**
@@ -529,7 +501,7 @@ Can I do something like, on mouse in, darkerPixel = darkerPixel + 0.5?
 (will be used as variable in RGBA for the A value)
 (default value will increase on each mouse in event)
 
-`multicolorActive`
+`isMulticolor`
 (if FALSE, paints greyscale, if TRUE, paints multicolour)
 
 **Callbacks**
@@ -540,28 +512,28 @@ Can I do something like, on mouse in, darkerPixel = darkerPixel + 0.5?
 
 
 
-EVENT LISTENER for DIV `"screenPixels"`(MOUSE IN, FUNCTION(PARAMETER `event`))
+EVENT LISTENER for DIV `"screenPixels"`(MOUSE IN, FUNCTION `handlePaintPixels`(PARAMETER `event`))
     // MAGIC makes this happen. Ah, the magic of pseudocode.
-    `darkerPixel` = `darkerPixel` + 0.5
+    `darkerPixel` = `darkerPixel` + 0.10 // constraint: must be 100% dark on 10 mouse-ins
 
     `pixelColor` = `getColors()`
 
    // Change background colour opacity property
 
-    IF `multicolorActive` is FALSE
+    IF `isMulticolor` is FALSE
         event.target.style.backgroundColor = rgba --`penGray`, ${`darkerPixel`} //something like this?
     ELSE
         event.target.style.backgroundColor = rgba `pixelColor`, ${`darkerPixel`}
 END of FUNCTION and EVENT LISTENER
 ```
 
-### SHAKE TOY
+### SHAKE TOY (ERASE USER'S DRAWING)
 
-This will remove all painted pixels from the screen as if the user "shook" the Etch-a-Sketch.
+**Purpose: This will remove all painted pixels from the screen as if the user "shook" the Etch-a-Sketch.**
 
 ```JS
-EVENT LISTENER for BUTTON `"btn-shake-toy"` (CLICK, (`event`))
-    FUNCTION CALL generatePixels(PARAMETER `customGridValue`)
+EVENT LISTENER for BUTTON `"btn-shake-toy"` (CLICK, FUNCTION `handleShakeToy`(`event`))
+    FUNCTION CALL generatePixels(PARAMETER `activeGridSize`)
 END of EVENT LISTENER
 ```
 
@@ -595,7 +567,7 @@ I just need to see it in one place. FOR SANITY.
 **Customized Pixel Grid: Colour**
 
 1. the user selects the multicolour toggle (`btnMulticolorToggle`).
-2. the toggle updates to switch back to greyscale on click and the text updates tor reflect new colour mode`"toggle-multicolor-text"`.
+2. the toggle updates to switch back to greyscale on click and the text updates tor reflect new colour mode`"toggle-multicolor-text"`
 3. the user hovers over pixels (`screenPixels`).
 4. the pixels change to random colours (`getColors()`: `"color-1"` … `"color-6"`), and continue to darken each time they are hovered over (`darkerPixel` increments).
 5. the user clicks the greyscale toggle, ending colour mode and resetting toggle & mode text in DOM.
@@ -603,7 +575,7 @@ I just need to see it in one place. FOR SANITY.
 **Shake / Reset**
 
 1. the user clicks `"btn-shake-toy"`.
-2. the grid regenerates using the stored grid size (`customGridValue` or `DEFAULT_GRID_SIZE`).
+2. the grid regenerates using the stored grid size (`activeGridSize` or `DEFAULT_GRID_SIZE`).
 3. the grid is returned to a blank slate for the user to draw on.
 
 ### FUNCTIONS
@@ -674,14 +646,14 @@ Increment `darkerPixel` to increment opacity
 Apply color and shade:
 
 - if multicolour off, set background color to `pen-gray` with alpha `darkerPixel`
-- if multicolour on, set background color to `pixelColour` (a random theme color) with alpha `darkerPixel`
+- if multicolour on, set background color to `activePixelColor` (a random theme color) with alpha `darkerPixel`
 
 #### ---Toggle multicolour mode for the DIV's background---
 
 **EVENT** BUTTON CLICK (`btnMulticolorToggle`)  
 **Uses:**  
 Button click `event`  
-`multicolorActive`  
+`isMulticolor`  
 `toggleMulticolorText`  
 **Does:**  
 Switches between multicolour and greyscale behaviour for `screenPixels` hover events  
@@ -698,10 +670,10 @@ Updates toggle text based on state
 - `darkerPixel` - increments opacity on each hover
 - `"pen-gray"` - base colour for greyscale pixels
 - `"color-1"` … `"color-6"` - multicolour pixel options
-- `multicolorActive` - TRUE/FALSE state
+- `isMulticolor` - TRUE/FALSE state
 - `toggleMulticolorText` - paragraph for UI feedback
 - `btn-shake-toy` - reset button
-- `customGridValue` - stored user grid size
+- `activeGridSize` - stored current grid size
 
 To be continued...  
 `(˶ᵔ ᵕ ᵔ˶)`
