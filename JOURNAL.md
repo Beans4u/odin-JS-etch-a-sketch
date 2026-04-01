@@ -1,10 +1,23 @@
-# Journal
+# Design Journal
+
+## About
 
 Rin's scratch pad. Getting my mind wrapped around the project specifications, constraints, and a place to explore problems.
 
-## Project Objectives
+**Last thoughts before final commit:**  
+This turned out to be messy, exploratory, aloof, and not at all what I was expecting. I tried to let my thoughts unfold without censoring my personality, and by not deleting most of them, they became hard to work around. They aren't that amusing to read back, and they add an awkward kind of cognitive load that I'm not sure how to describe. I'm not going to approach it this way again.
 
-## Constraints
+I also learned the value of starting and prioritizing an MVP before I try to stack on optional features, my own flare, get lost in CSS architecture rabbit holes, and fuss entirely too much with variable names.
+
+I also learned that I forgot most of what little I knew about pseudocode writing conventions, but in the interest of time, I'm glad I didn't look them up. My _half-code, half-pseudocode_ pseudocode served its purpose. I'm going to clean up this document by pasting it into a DESIGN file and keeping only the bare essentials. Then I'll copy _that_ into a JS file and finally get to work coding. I might as well build all the features I pseudocoded, but if they become trouble, then I'll drop them and finally finish [FOUNDATIONS](https://www.theodinproject.com/paths/foundations/courses/foundations)!
+
+From an art perspective, though, it occurs to me that pseudocode is much like an artist's thumbnails and underdrawings. You sketch multiple iterations of your concept rapidly, working out problems with composition, forms, perspective, light sources, etc., and finally commit to an underdrawing. Then you solve those problems until you can finally draw on top of it with your chosen medium for the final rendering. Anyone looking will only see the finished product, and not all the mess and problem-solving that went into it in advance.
+
+I wasn't intending this to be so reflective. This is another lesson in scope creep. `(⊙ _ ⊙ )`
+
+Onward!
+
+## Project Objectives, Constraints
 
 **App behaviour and parameters**
 
@@ -65,48 +78,52 @@ Mouse event: How will this interact with the darkening? Should the colours conti
 
 Now to sort my thoughts out for the things about the stuff:
 
-**Structure:**
+## - - - - - - - - - - - STRUCTURE & IMPLEMENTATION MAPPING BRAIN DUMP - - - - - - - - - - -
+
 Mapping this out to get a sense of it.
 
-```js
+```JS
 DIV container `"toy-surface"`
  // HTML: hardcode.
  // CSS: rounded corners, I want to style it with that retro 70s/80s red. For the vibes.
 
-    // HEADER:
-        // HTML: H1 TEXT is `"etch-a-sketch logo"`.
+    ELEMENT H1 header `"etch-a-sketch logo"`
+        // HTML: H1 TEXT contains "Etch-a-Sketch"
         // CSS: Import look-alike font for top of file.
 
     DIV container `"drawing-screen"`
      // HTML: hardcode.
-     // CSS: must not change size when number of DIV "screen-pixels-default" changes.
+     // CSS: (constraint) must not change size when number of DIV "screen-pixels" changes.
 
-        DIVs `"screen-pixels-default"`
+        DIVs `"screen-pixels"`
           // JS:
                // - use LOOP to generate a 16 x 16 grid of divs or user input number.
                // - use LOOP to add a CSS class to each div to limit divs in each row.
                // - mouse event: add or generate CSS modifier class to darken divs on hover.
                // - mouse event: change to random colour if that option is toggled.
           // CSS:
-               // - Use Flexbox. Use grow/shrink flex basis for size changes?
+               // - Use Flexbox flex-basis and div height to control number of divs per row
                // - Constrict the divs to their size, mind the margins and borders.
 
-       END of DIVs `"screen-pixels-default"`
+       END of DIVs `"screen-pixels"`
 
   END of DIV container `"drawing-screen"`
 
-  DIV `"custom-pixel-buttons"` // use Flexbox to push them to either side of the container.
+  DIV `"custom-resolution-buttons"` // use Flexbox to push them to either side of the container.
 
-    BUTTON `"btn-custom-pixel-size"`
-    INPUT LABEL `"custom-pixel-size"`
-        DEFAULT LABEL TEXT "enter a custom pixel size"
+    FORM
+        BUTTON `"btn-set-resolution"`
+        INPUT LABEL `"custom-screen-resolution"`
+            DEFAULT LABEL TEXT "enter a custom screen resolution"
 
-    BUTTON `"btn-multicolor-toggle"`
-    PARAGRAPH `"toggle-multicolor-text"`
+        BUTTON `"btn-multicolor-toggle"`
+    END OF FORM
+
+    PARAGRAPH `"multicolor-status-label"`
         "toggle multicolor"
     END of PARAGRAPH
 
-  END of DIV `"custom-pixel-buttons"`
+  END of DIV `"custom-resolution-buttons"`
 
 END of DIV container `"toy-surface"`
 
@@ -114,42 +131,52 @@ DIV `"shake-toy-container"`
 
     BUTTON `"btn-shake-toy"` // to reset the image? Could place above/below toy on page.
     PARAGRAPH `"shake-toy-text"`
-        "shake! (erases your image)"
+        "shake! (erase your image)"
     END of PARAGRAPH
 
 END of DIV `"shake-toy-container"`
-
-
 ```
 
 Right??
 
-## PSEUDOCODE: VARIABLES and CLASSES
+## - - - - - - - - - - - GLOBAL VARIABLES - - - - - - - - - - -
 
-### GLOBAL VARIABLES (grows alongside pseudocode)
+const `pixelOpacity` = 0.0
 
-const `darkerPixel` = 0.0
-
-const `drawingScreen` = DOC DIV `"drawing-screen"`  
-const `customGridSize` = DOC INPUT `"custom-grid-size"`  
-const `btnCustomGridSize` = DOC BUTTON `"btn-custom-grid-size"`
-const `btnMulticolorToggle` = DOC BUTTON `"btn-multicolor-toggle"`
-const `btnShakeToy` = DOC BUTTON `"btn-shake-toy"`
-const `toggleMulticolorText` = DOC PARAGRAPH `"toggle-multicolor-text"`
+const `drawingScreen` = DOC GET ELEMENT DIV `"drawing-screen"`  
+const `customScreenResolution` = DOC GET ELEMENT INPUT `"custom-screen-resolution"`  
+const `btnSetResolution` = DOC GET ELEMENT BUTTON `"btn-set-resolution"`
+const `btnMulticolorToggle` = DOC GET ELEMENT BUTTON `"btn-multicolor-toggle"`
+const `btnShakeToy` = DOC GET ELEMENT BUTTON `"btn-shake-toy"`
+const `multicolorStatusLabel` = DOC GET ELEMENT PARAGRAPH `"multicolor-status-label"`
 
 **For rows that are 16 divs across**  
-const `DEFAULT_GRID_SIZE` = whatever value makes a 16 x 16 grid.
-let `activeGridSize` = 0
-(will be updated by EVENT LISTENER for `customGridSize` so that it can be used to "shake" the toy in the Shake Screen EVENT LISTENER, and erase the drawing while keeping the custom grid in place)
+const `DEFAULT_SCREEN_RESOLUTION` = whatever value makes a 16 x 16 screen resolution.
+let `activeScreenResolution` = `DEFAULT_SCREEN_RESOLUTION`
+(will be updated by EVENT LISTENER for `customScreenResolution` so that it can be used to "shake" the toy in the Shake Screen EVENT LISTENER, and erase the drawing while keeping the custom screen resolution in place)
 
-**Note on calc for `DEFAULT_GRID_SIZE`:**  
+**Note on calc for `DEFAULT_SCREEN_RESOLUTION`:**  
 Width and padding-bottom are 25% according to https://iamsteve.me/blog/how-to-flexible-squares-with-css.  
 The custom height will be added via JS to control the size using **MATH MAGIC** in FUNCTION
-`calculateDivHeight` using the PARAMETER `gridSize`.
+`calculatePixelHeight` using the PARAMETER `screenResolution`.
 
 **Prerequisite:** This one needs to let the screen pixels generate first
-const `screenPixels` = DOC DIV `"drawing-screen"` CHILDREN
+const `screenPixels` = DOC GET ELEMENT DIV `"drawing-screen"` CHILDREN
 (need to figure this out: children as OBJECT using querySelectorAll? Or should I run a FOR EACH that gives them all a class which is then used to assign them for the class query selector to this variable?)
+
+**- - - Global VAR colours: Multicolor Pixels - - -**
+Update: Figured out a colour theme to match the retro 70s aesthetic, as a jumping off point
+
+const `harvestGold` #DAA520  
+const `burntOrange` #CC5500  
+const `avocadoGreen` #568203  
+const `earthBrown` #5D3A1A  
+const `ochreYellow` #CC7722  
+const `dustyTeal` #3B7A57
+
+**- - - Global VAR colour: Grayscale Pixels - - -**
+const`penGray` #333333
+(tracker, the "pen")
 
 ### CSS CLASSES (grows alongside pseudocode)
 
@@ -175,27 +202,14 @@ GLOBAL: VAR height
 VAR colour `"logo-gold"`  
 (Etch-a-Sketch branded name on top of device)
 
-VAR colour `"classic-red"`  
+VAR colour `"classic-red"` #B11016  
 (container colour in that classic 70s-80s red)
 
-VAR colour `"screen-grey"`  
+VAR colour `"screen-grey"` #BABABA  
 (drawing screen)
 
-VAR colour `"knob-white"`  
+VAR colour `"knob-white"` #F5F5F5  
 (the "dials" that move the pen on the toy will be buttons for user)
-
-**- - - Global VAR colours: Multicolor Pixels - - -**
-actual colours are TBD  
-VAR color `"color-1"`  
-VAR color `"color-2"`  
-VAR color `"color-3"`  
-VAR color `"color-4"`  
-VAR color `"color-5"`  
-VAR color `"color-6"`
-
-**- - - Global VAR colour: Grayscale Pixels - - -**
-VAR colour `"pen-gray"`  
-(tracker, the "pen")
 
 **- - - Structure: - - -**
 DIV `"etch-a-sketch"`  
@@ -220,13 +234,13 @@ LABEL
 
 **- - - Modifier Classes - - -**
 
-DIV `"screen-pixels-default"`  
-(contains default colour, can be used in initial grid generation and to reset grid)
-(to be used with `screenPixels` in FUNCTION `calculateDivHeight`)
+DIV `"screen-pixels"`  
+(contains default colour, can be used in initial pixel grid generation and to reset grid)
+(to be used with `screenPixels` in FUNCTION `calculatePixelHeight`)
 
-BUTTON `"btn-custom-pixel-size"`
+BUTTON `"btn-set-resolution"`
 
-LABEL `"custom-pixel-size"`
+LABEL `"custom-screen-resolution"`
 
 BUTTON `"btn-multicolor-toggle"`
 
@@ -237,30 +251,32 @@ BOOL `isMulticolor` = FALSE
 
 ## - - - - - - - - - - - PSEUDOCODE: LOGIC - - - - - - - - - - -
 
-### CONSTRAIN GRID SIZE (to equal height and width)
+### CONSTRAIN PIXEL GRID SIZE FOR SCREEN RESOLUTION (to equal height and width)
 
 How: Calculate height % of generated divs (screen pixels) for drawing screen. The height property is needed for the CSS class in order for Flexbox to correctly distribute the pixel DIVs in the grid.
 
 Purpose:
 
-1. Determine the size of the DIV height according to the value in `gridSize`.
+1. Determine the size of the DIV height according to the value in `screenResolution`.
 2. RETURN value as INT
 
-In order to print the same number of `gridSize` DIVs across as `gridSize` DIVs down (e.g. 16 x 16). Grid x must equal grid y. Maybe a modifier class? Can I modify a single CSS class directly with a calculation, or do I need to create a new one?
+In order to print the same number of `screenResolution` DIVs across as `screenResolution` DIVs down (e.g. 16 x 16). Grid x must equal grid y. Maybe a modifier class? Can I modify a single CSS class directly with a calculation, or do I need to create a new one?
 
 ```JS
-FUNCTION `calculateDivHeight` (PARAMETER `gridSize`)
+FUNCTION `calculatePixelHeight` (PARAMETER `screenResolution`)
    // MAGIC:
-        const `calcDivHeight` = `gridSize';
-        MAGIC CALCULATION: height % required for Flexbox to place `gridSize` number of DIVs in one row of `drawingScreen` (is either user input or default value)
-        ANTI-MAGIC: I found a formula. It is the length of the container `screenPixels` divided by the `gridSize`. Need to figure out how big container should be. I will figure that out during implementation so I can see it clearly.
+        const `calcPixelHeight` = `screenResolution`;
+        MAGIC CALCULATION: height % required for Flexbox to place `screenResolution` number of DIVs in one row of `drawingScreen` (is either user input or default value)
+        ANTI-MAGIC: I found a formula. It is the length of the container `screenPixels` divided by the `screenResolution`. Need to figure out how big container should be. I will figure that out during implementation so I can see it clearly.
 
-        RETURN result as INT: `toINT`( [[container height]] / `gridSize` )
+        Update: Using float for precise pixel height on generated DIVs
+
+        RETURN result as INT: `toFLOAT`( [[container length]] / `screenResolution` )
 
 END OF FUNCTION
 ```
 
-### GENERATE DIVS FOR SCREEN
+### GENERATE PIXEL DIVS FOR SCREEN
 
 **Purpose:**
 
@@ -270,33 +286,33 @@ END OF FUNCTION
 
 **Update:** I removed the class modification steps from the loop, I want to try inheriting from the parent class instead. Code economy and all that.
 
-**Update 2:** The divHeight is now going to be used to modify a global variable for height, as my other method was stinky with bad code economy.
+**Update 2:** The pixelHeight is now going to be used to modify a global variable for height, as my other method was stinky with bad code economy.
 
 #### **---Variables Used---**
 
 GLOBAL:  
-const `drawingScreen` = DOC DIV `"drawing-screen"`  
-const `DEFAULT_GRID_SIZE` = MAGIC: whatever value makes a 16 x 16 grid.
+const `drawingScreen` = DOC GET ELEMENT DIV `"drawing-screen"`  
+const `DEFAULT_SCREEN_RESOLUTION` = MAGIC: whatever value makes a 16 x 16 pixel grid.
 
 SCOPE:  
-const `gridSize` = `newGridSize`  
-const `divHeight` = INVOKE FUNCTION `calculateDivHeight`(PARAMETER `gridSize`)  
-let `screenPixels` = DOC CREATE DIV (initialized in LOOP. Used "let" so that it can be manipulated later with colours)
+const `screenResolution` = `newScreenResolution`  
+const `pixelHeight` = INVOKE FUNCTION `calculatePixelHeight`(PARAMETER `screenResolution`)  
+let `screenPixels` = DOC CREATE ELEMENT DIV (initialized in LOOP. Used "let" so that it can be manipulated later with colours)
 
 #### **---JS: Generate Pixels---**
 
 ```JS
-FUNCTION generatePixels (PARAMETER `newGridSize` = default value is `DEFAULT_GRID_SIZE`)
+FUNCTION generatePixels (PARAMETER `newScreenResolution` = default value is `DEFAULT_SCREEN_RESOLUTION`)
 
-    const `gridSize` = `newGridSize`
+    const `screenResolution` = `newScreenResolution`
 
-    const `divHeight` = FUNCTION CALL `calculateDivHeight`(PARAMETER `gridSize`)
+    const `pixelHeight` = FUNCTION CALL `calculatePixelHeight`(PARAMETER `screenResolution`)
 
-    give `"drawingScreen"` a style height of `divHeight`
+    give `"drawingScreen"` a style height of `pixelHeight`
 
-    // + + + Generate grid and print to web page + + +
-    LOOP `i` times, where `i` is `gridSize` value squared
-        let `screenPixels` = DOC CREATE CHILD DIV
+    // + + + Generate pixel grid and print to web page + + +
+    LOOP `i` times, where `i` is `screenResolution` value squared
+        let `screenPixels` = DOC CREATE ELEMENT CHILD DIV
         append `screenPixels` to `drawingScreen`
     END of LOOP
 
@@ -305,9 +321,9 @@ FUNCTION generatePixels (PARAMETER `newGridSize` = default value is `DEFAULT_GRI
 END OF FUNCTION
 ```
 
-### REMOVE DIVS FROM SCREEN
+### REMOVE PIXEL DIVS FROM SCREEN
 
-**Purpose: Removes DIV children from screenPixels when the user creates a custom grid size, handled by the `handleCustomGridSize` EVENT**
+**Purpose: Removes DIV children from screenPixels when the user creates a custom screen resolution, handled by the `handleCustomScreenResolution` EVENT**
 
 **Variables**
 `screenPixels`
@@ -327,7 +343,7 @@ FUNCTION removePixels(`screenPixels`) {
 
 ```
 
-#### ---CSS - CLASS FOR THE GRID WITH ESSENTIAL PROPERTIES.---
+#### - - - CSS - CLASS FOR THE PIXEL GRID WITH ESSENTIAL PROPERTIES - - -
 
 ```CSS
 /** Top of file: Avoid issues with margins throughout web app **/
@@ -342,7 +358,7 @@ FUNCTION removePixels(`screenPixels`) {
 
 /** NOTE: for sizing and borders. colour is inherited from parent class **/
 
-.screen-pixels-default {
+.screen-pixels {
     will be inserted via JS
     no borders
 }
@@ -382,17 +398,17 @@ FUNCTION getColors(){
         const number = Math.floor(Math.random() * 6) + 1;
 
         if (number === 1) {
-            RETURN `"color-1"`;
+            RETURN `harvestGold`;
         } else if (number === 2) {
-            RETURN `"color-2"`;
+            RETURN `burntOrange`;
         } else if (number === 3) {
-            RETURN `"color-3"`;
+            RETURN `avocadoGreen`;
         } else if (number === 4) {
-            RETURN `"color-4"`;
+            RETURN `earthBrown`;
         } else if (number === 5) {
-            RETURN `"color-5"`;
+            RETURN `ochreYellow`;
         } else {
-            return RETURN `"color-6"`;
+            RETURN `dustyTeal`;
         }
 } END of FUNCTION
 
@@ -400,13 +416,13 @@ FUNCTION getColors(){
 
 ## - - - - - - - - - - - PSEUDOCODE: EVENTS - - - - - - - - - - -
 
-### CUSTOM GRID SIZE
+### CUSTOM SCREEN RESOLUTION
 
-Resize DIVs for Drawing Screen grid from INPUT
+Resize DIVs for Drawing Screen pixel grid from INPUT
 
 **Purpose:**
 
-1. Receive user input from LABEL `custom-grid-size`
+1. Receive user input from LABEL `custom-screen-resolution`
 2. Check for errors and convert to INT
 3. Delete current DIV grid
 4. Call `generated-pixels` and pass in INT to repaint `drawing-screen`
@@ -414,31 +430,35 @@ Resize DIVs for Drawing Screen grid from INPUT
 **Variables**
 
 GLOBAL:  
-const `customGridSize` = DOC INPUT `"custom-grid-size"`
-let `activeGridSize` = 0
-(will be updated by EVENT LISTENER for `customGridSize` so that it can be used to "shake" the toy in the Shake Screen EVENT LISTENER, and erase the drawing while keeping the current grid in place)
+const `customScreenResolution` = DOC GET ELEMENT INPUT `"custom-screen-resolution"`
+let `activeScreenResolution` = DEFAL
+(will be updated by EVENT LISTENER for `customScreenResolution` so that it can be used to "shake" the toy in the Shake Screen EVENT LISTENER, and erase the drawing while keeping the current grid in place)
 
 **Event Listener**
 
 #### JS - send user input to `generatePixels`
 
 ```JS
-EVENT LISTENER for INPUT customGridSize (SUBMIT/CHANGE FUNCTION `handleCustomGridSize`(PARAMETER `event`))
-    const `newGridSize` = +event.target.value
+EVENT LISTENER for INPUT customScreenResolution (SUBMIT/CHANGE FUNCTION `handleCustomScreenResolution`(PARAMETER `event`))
+
+    // Need to prevent default IF using the SUBMIT event, if CHANGE then no.
+    // event.preventDefault();
+
+    const `newScreenResolution` = +event.target.value
     // (convert to number with +, returns NaN if invalid number)
 
-    IF `newGridSize` is isNaN (syntax: isNaN(`newGridSize`))
-        RETURN error message containing value of `newGridSize`
-    ELSE IF `newGridSize` is less than 4 or more than 100
-        RETURN error message stating the grid size must be between 4 and 100, display value received
+    IF `newScreenResolution` is isNaN (syntax: isNaN(`newScreenResolution`))
+        RETURN error message containing value of `newScreenResolution`
+    ELSE IF `newScreenResolution` is less than 4 or more than 100
+        RETURN error message stating the screen resolution must be between 4 and 100, display value received
     END of IF STATEMENT
 
-    let `customGridSize` = `newGridSize`
-    // (this is a global variable that will remember the user's grid size for shaking the toy)
+    let `customScreenResolution` = `newScreenResolution`
+    // (this is a global variable that will remember the user's screen resolution for shaking the toy)
     // moved beneath IF statement for better code economy
 
     FUNCTION CALL `removePixels`()
-    FUNCTION CALL `generatePixels`(PARAMETER `newGridSize`)
+    FUNCTION CALL `generatePixels`(PARAMETER `newScreenResolution`)
 
 END OF FUNCTION AND EVENT LISTENER
 ```
@@ -459,7 +479,7 @@ The event listener for painting the pixels will check the bool and paint greysca
 `btnMulticolorToggle`
 (DOM node)
 
-`"toggle-multicolor-text"`
+`"multicolor-status-label"`
 (DOM node - paragraph, change text on toggle)
 
 ```JS
@@ -490,14 +510,14 @@ END of FUNCTION and EVENT LISTENER
 
 **Global variables**
 
-**(must be used after grid is generated):**
-const `screenPixels` = DOC DIV `"drawing-screen"` CHILDREN
+**(must be used after pixel grid is generated):**
+const `screenPixels` = DOC GET ELEMENT DIV `"drawing-screen"` CHILDREN
 (need to figure this out: children as OBJECT using querySelectorAll? Or should I run a FOR EACH that gives them all a class which is then used to assign them for the class query selector to this variable?)
 
-MAGIC: darkerPixel goes up by 0.3 or 0.5 on each mouse pass. I'll know more when I can test it.  
-Can I do something like, on mouse in, darkerPixel = darkerPixel + 0.5?
+MAGIC: pixelOpacity goes up by 0.3 or 0.5 on each mouse pass. I'll know more when I can test it.  
+Can I do something like, on mouse in, pixelOpacity = pixelOpacity + 0.5?
 
-`darkerPixel`
+`pixelOpacity`
 (will be used as variable in RGBA for the A value)
 (default value will increase on each mouse in event)
 
@@ -512,18 +532,43 @@ Can I do something like, on mouse in, darkerPixel = darkerPixel + 0.5?
 
 
 
-EVENT LISTENER for DIV `"screenPixels"`(MOUSE IN, FUNCTION `handlePaintPixels`(PARAMETER `event`))
+EVENT LISTENER for DIV `drawingScreen`(MOUSE IN, FUNCTION `handlePaintPixels`(PARAMETER `event`))
     // MAGIC makes this happen. Ah, the magic of pseudocode.
-    `darkerPixel` = `darkerPixel` + 0.10 // constraint: must be 100% dark on 10 mouse-ins
+    // `pixelOpacity` = `pixelOpacity` + 0.10 // constraint: must be 100% dark on 10 mouse-ins
 
-    `pixelColor` = `getColors()`
+    // update: Use event delegation instead of targeting each pixel, how did I miss that?
 
-   // Change background colour opacity property
+    // Update: Uh-oh. If I change the global variable, the pixel it's hovered over won't remember the opacity!! I need to figure out how to isolate only the affected pixel. :S
+    // Sooooooo objects?
+    // I found out about dataset.
+        // Event delegation, check.
+        // Per-element state storage. Funny I was going in that direction but for objects. No check, also, how do??
+        // use e.target for the individual DIV, put it in pixel.
+        // increment the opacity on each mouse-in event. Howwww.
+        // pixelOpacity = pixel.dataset.alpha). Returns as a string, change to FLOAT for math reasons
+        // increment opacity... umm. MAGIC! No. alpha + 1. Yeah that's not gonna work. Need to suss this out.
+            // pixelOpacity = Math.min(alpha + 0.1, 1). Returns whatever is smaller, increment alpha + 0.1 to make it 10% darker, 1 is 100% opacity.
+        // state. STATE. Um. Save it to itself like my pixelOpacity += 0.1 idea. So, pixel.dataset.pixelOpacity = pixelOpacity? Right??
+        // STORE COLOURS TOO? Currently they change on each mouse-in event. IF multicolor mode is on, event.dataset.color = getColors()
+        // Is there anything more? This feels like it's missing something.
+        // I'm tired of looking at this doc! LGTM time to ship! 〜⁠(⁠꒪⁠꒳⁠꒪⁠)⁠〜 aaaaaaah
 
-    IF `isMulticolor` is FALSE
-        event.target.style.backgroundColor = rgba --`penGray`, ${`darkerPixel`} //something like this?
+    const pixel = event.target('.pixel')
+
+    let pixelOpacity = event.dataset.alpha and convert TO FLOAT || 0 //in case it's empty
+    alpha = Math.min(pixelOpacity + 0.1, 1) // right?
+
+    event.dataset.alpha = pixelOpacity
+
+
+   // Change background colour to random color/grayscale and apply opacity property
+    IF `isMulticolor` is TRUE
+        `newPixelColor` = `getColors()`
+        event.target.style.backgroundColor = rgba ${`newPixelColor`}, ${`pixelOpacity`}
+
     ELSE
-        event.target.style.backgroundColor = rgba `pixelColor`, ${`darkerPixel`}
+        event.target.style.backgroundColor = rgba ${`penGray`}, ${`pixelOpacity`} //something like this?
+
 END of FUNCTION and EVENT LISTENER
 ```
 
@@ -533,7 +578,7 @@ END of FUNCTION and EVENT LISTENER
 
 ```JS
 EVENT LISTENER for BUTTON `"btn-shake-toy"` (CLICK, FUNCTION `handleShakeToy`(`event`))
-    FUNCTION CALL generatePixels(PARAMETER `activeGridSize`)
+    FUNCTION CALL generatePixels(PARAMETER `activeScreenResolution`)
 END of EVENT LISTENER
 ```
 
@@ -554,58 +599,58 @@ I just need to see it in one place. FOR SANITY.
 
 **Default Pixel Grid: Size and Colour**
 
-1. the page loads, and the 16 x 16 pixel grid is generated (`DEFAULT_GRID_SIZE`).
+1. the page loads, and the 16 x 16 pixel grid is generated (`DEFAULT_SCREEN_RESOLUTION`).
 2. user moves mouse over pixels (`screenPixels`).
-3. the pixels turn grey (`pen-gray`), and become darker each time they are hovered over (`darkerPixel` increments per hover).
+3. the pixels turn grey (`penGray`), and become darker each time they are hovered over (`pixelOpacity` increments per hover).
 
 **Customized Pixel Grid: Size**
 
-1. the user submits a custom grid number (`customGridSize` input).
+1. the user submits a custom grid number (`customScreenResolution` input).
 2. the pixel grid clears (`removePixels()`).
-3. the pixel grid is generated with the user's custom grid number (`generatePixels(newGridSize)`).
+3. the pixel grid is generated with the user's custom grid number (`generatePixels(newScreenResolution)`).
 
 **Customized Pixel Grid: Colour**
 
 1. the user selects the multicolour toggle (`btnMulticolorToggle`).
-2. the toggle updates to switch back to greyscale on click and the text updates tor reflect new colour mode`"toggle-multicolor-text"`
+2. the toggle updates to switch back to greyscale on click and the text updates to reflect new colour mode `"multicolor-status-label"`
 3. the user hovers over pixels (`screenPixels`).
-4. the pixels change to random colours (`getColors()`: `"color-1"` … `"color-6"`), and continue to darken each time they are hovered over (`darkerPixel` increments).
+4. the pixels change to random colours (`getColors()`: `"color-1"` … `"color-6"`), and continue to darken each time they are hovered over (`pixelOpacity` increments).
 5. the user clicks the greyscale toggle, ending colour mode and resetting toggle & mode text in DOM.
 
 **Shake / Reset**
 
 1. the user clicks `"btn-shake-toy"`.
-2. the grid regenerates using the stored grid size (`activeGridSize` or `DEFAULT_GRID_SIZE`).
-3. the grid is returned to a blank slate for the user to draw on.
+2. the pixel grid regenerates using the stored grid size (`activeScreenResolution` or `DEFAULT_SCREEN_RESOLUTION`).
+3. the pixel grid is returned to a blank slate for the user to draw on.
 
 ### FUNCTIONS
 
 **Note on DIV CSS height property:**  
-The CSS class applied to each DIV constrains the number of DIVs per line to the same value (using a Flexbox trick), so we get a gridSize x gridSize grid, e.g. 16x16.
+The CSS class applied to each DIV constrains the number of DIVs per line to the same value (using a Flexbox trick), so we get a screenResolution x screenResolution grid, e.g. 16x16.
 
 #### ---Calculate pixel height for grid layout---
 
-**FUNCTION** `calculateDivHeight`(`gridSize`)  
+**FUNCTION** `calculatePixelHeight`(`screenResolution`)  
 **Uses:**  
-`gridSize`  
+`screenResolution`  
 **Creates / Returns:**  
-`divHeight` (used to style `"drawingScreen"` height and constrain `screenPixels`)
+`pixelHeight` (used to style `"drawingScreen"` height and constrain `screenPixels`)
 
 #### ---Generate pixel DIVs as a grid in DIV `drawingScreen`---
 
-**FUNCTION** `generatePixels`(`newGridSize` = `DEFAULT_GRID_SIZE`)  
+**FUNCTION** `generatePixels`(`newScreenResolution` = `DEFAULT_SCREEN_RESOLUTION`)  
 **Uses:**  
-`newGridSize`  
-`DEFAULT_GRID_SIZE`  
+`newScreenResolution`  
+`DEFAULT_SCREEN_RESOLUTION`  
 `drawingScreen`  
-`calculateDivHeight()`  
+`calculatePixelHeight()`  
 **Creates:**  
-`gridSize`  
-`divHeight`  
+`screenResolution`  
+`pixelHeight`  
 `screenPixels` (individual DIVs in loop)  
 **Does:**  
-Loops `gridSize²`  
-Creates and appends pixel DIVs (`"screen-pixels-default"` or inherited class)  
+Loops `screenResolution²`  
+Creates and appends pixel DIVs (`"screen-pixels"` or inherited class)  
 **Return / Output:**  
 DIV grid rendered in DOM
 
@@ -621,32 +666,32 @@ Loops through all child DIVs and removes them from DOM or clears container direc
 
 #### ---Retrieve user's custom grid size for drawing screen DIVs---
 
-**EVENT** INPUT (CHANGE / SUBMIT, `customGridSize`)  
+**EVENT** INPUT (CHANGE / SUBMIT, `customScreenResolution`)  
 **Uses:**  
 `event`.target.value  
 **Creates:**  
-`newGridSize`  
+`newScreenResolution`  
 **Does:**  
-Validate input (`4 ≤ newGridSize ≤ 100`)  
+Validate input (`4 ≤ newScreenResolution ≤ 100`)  
 Delete current grid (`removePixels()`)  
-Generate new grid (`generatePixels(newGridSize)`)
+Generate new grid (`generatePixels(newScreenResolution)`)
 
 #### ---On hover, paint and darken pixels---
 
 **EVENT** MOUSE IN (`screenPixels` via parent `"drawing-screen"`)  
 **Uses:**  
 `screenPixels`  
-`darkerPixel`  
+`pixelOpacity`  
 `getColors()`  
 `btnMulticolorToggle`  
 **Creates:**  
-`pixelColor`  
+`newPixelColor`  
 **Does:**  
-Increment `darkerPixel` to increment opacity
+Increment `pixelOpacity` to increment opacity
 Apply color and shade:
 
-- if multicolour off, set background color to `pen-gray` with alpha `darkerPixel`
-- if multicolour on, set background color to `activePixelColor` (a random theme color) with alpha `darkerPixel`
+- if multicolour off, set background color to `penGray` with alpha `pixelOpacity`
+- if multicolour on, set background color to `newPixelColor` (a random theme color) with alpha `pixelOpacity`
 
 #### ---Toggle multicolour mode for the DIV's background---
 
@@ -654,26 +699,35 @@ Apply color and shade:
 **Uses:**  
 Button click `event`  
 `isMulticolor`  
-`toggleMulticolorText`  
+`multicolorStatusLabel`  
 **Does:**  
 Switches between multicolour and greyscale behaviour for `screenPixels` hover events  
 Updates toggle text based on state
 
 ### GLOBAL / REUSED VARIABLES AT-A-GLANCE
 
-- `drawingScreen` - container DIV for grid
+- `drawingScreen` - container DIV for `screenPixels`
 - `screenPixels` - pixel DIVs inside `drawingScreen`
-- `customGridSize` - user input for custom grid
-- `btnCustomGridSize` - button to trigger custom size
+- `customScreenResolution` - user input for custom screen resolution
+- `btnSetResolution` - button to trigger custom size
 - `btnMulticolorToggle` - button to toggle multicolour mode
-- `DEFAULT_GRID_SIZE` - 16 (default 16x16 grid)
-- `darkerPixel` - increments opacity on each hover
-- `"pen-gray"` - base colour for greyscale pixels
+- `DEFAULT_SCREEN_RESOLUTION` - 16 (default 16x16 screen resolution)
+- `pixelOpacity` - increments opacity on each hover
+- `"penGray"` - base colour for greyscale pixels
 - `"color-1"` … `"color-6"` - multicolour pixel options
 - `isMulticolor` - TRUE/FALSE state
-- `toggleMulticolorText` - paragraph for UI feedback
+- `multicolorStatusLabel` - paragraph for UI feedback
 - `btn-shake-toy` - reset button
-- `activeGridSize` - stored current grid size
+- `activeScreenResolution` - stored current screen resolution
+
+## HOUSECLEANING - COMPLETE
+
+1. DONE! (I thought it would be harder) Need to figure out the pixelOpacity issue. This is currently a global variable, which will affect all the pixels on mouse-in events.
+
+**screenPixels**
+
+1. will need to be used only after a grid is generated. I should just switch to using the drawingScreen children somehow.
+2. The event listener for Screen Pixels will run on each mouse-in event. I should run it on the parent instead.
 
 To be continued...  
 `(˶ᵔ ᵕ ᵔ˶)`
