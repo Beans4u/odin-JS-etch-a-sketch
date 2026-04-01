@@ -1,0 +1,93 @@
+/* - - - - - - - - - App Logo: - - - - - - - - - - */
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Style+Script&display=swap');
+
+/* - - - - - - - - - Global reset: - - - - - - - - - - */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* - - - - - - - - - App Colors: - - - - - - - - - - */
+:root {
+  --logo-gold: #ffd900ef;
+  /* (Etch-a-Sketch branded name on top of device) */
+
+  --classic-red: #b11016;
+  /* (container colour in that classic 70s red) */
+
+  --screen-gray: #bababa;
+  /* (drawing screen) */
+
+  --knob-white: #f5f5f5;
+  /* (the dials that move the pen on the toy will be buttons for user) */
+
+  --warm-sandstone: #d2b48c;
+  /* (for the toy to "sit" on something so it's not just floating on a white page) */
+
+  --text-color: #ffd900da;
+
+  --text-shadow: text-shadow: 1px 1px 0px rgba(0, 0, 0, 0.2);
+}
+
+body {
+  background-color: var(--warm-sandstone);
+}
+p,
+label {
+  color: var(--text-color);
+  font-size: 1em;
+  text-shadow: var(--text-shadow);
+  font-family: 'Montserrat', sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+}
+
+/* - - - - - - - - - Structure & Style: - - - - - - - - - - */
+#etch-a-sketch-container {
+}
+/* (position Etch-a-Sketch app from edge of page) */
+
+.toy-surface {
+  background-color: var(--classic-red);
+}
+/* (container and frame of Etch-a-Skech which will house BUTTONS and INPUT) */
+
+.drawing-screen {
+  background-color: var(--screen-gray);
+}
+/* (where the user will draw, and where screenPixels live, possibly child items to inherit common styles or effects) */
+
+/* - - - - - - - - - Logo - - - - - - - - - - */
+
+.logo {
+  color: var(--logo-gold);
+  text-shadow: var(--text-shadow);
+  opacity: 0.8;
+}
+.etch-a-sketch-logo {
+  font-family: 'Style Script', cursive;
+  font-size: 4em;
+  font-weight: 400;
+  font-style: normal;
+}
+.magic-screen-logo {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 2.3em;
+  font-weight: 100;
+  font-style: normal;
+}
+
+/* - - - - - - - - - Dynamic Elements - - - - - - - - - - */
+button {
+  background-color: var(--knob-white);
+}
+
+.custom-screen-resolution {
+  background-color: var(--classic-red);
+  border-style: solid;
+  border-color: #ffd900a2;
+  border-width: 1px 2px 2px 1px;
+}
+/* input */

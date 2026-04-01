@@ -4,28 +4,37 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Etch-a-Sketch</title>
+    <link rel="stylesheet" href="style.css" />
   </head>
   <body>
-    <div id="toy-surface">
-      <h1 id="logo">Etch-a-Sketch</h1>
+    <div id="etch-a-sketch-container">
+      <div class="toy-surface">
+        <h1 class="logo magic-screen-logo">MAGIC</h1>
+        <h1 class="logo etch-a-sketch-logo">Etch-a-Sketch</h1>
+        <h1 class="logo magic-screen-logo">SCREEN</h1>
 
-      <div id="drawing-screen"></div>
+        <div class="drawing-screen"></div>
 
-      <div id="custom-resolution-buttons">
-        <form>
-          <button id="btn-set-resolution"></button>
-          <input id="custom-screen-resolution" />
-          <label>Enter a custom screen resolution</label>
+        <div id="toy-control-panel">
+          <form>
+            <button class="btn-set-resolution"></button>
+            <input
+              id="screen-controls"
+              class="custom-screen-resolution"
+            />
+            <label for="screen-controls"
+              >Enter a custom screen resolution</label
+            >
 
-          <button id="btn-multicolor-toggle"></button>
-          <label>Toggle Multicolor</label>
-        </form>
+            <button class="btn-shake-toy"></button>
+            <p class="shake-toy-text">shake! (erase your image)</p>
+
+            <button class="btn-multicolor-toggle"></button>
+            <p class="multicolor-status-label">Toggle Multicolor</p>
+          </form>
+        </div>
       </div>
-    </div>
-
-    <div id="shake-toy-container">
-      <button id="btn-shake-toy"></button>
-      <p id="shake-toy-text">shake! (erase your image)</p>
+      </div>
     </div>
   </body>
 </html>
