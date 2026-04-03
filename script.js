@@ -30,3 +30,33 @@ const avocadoGreen = '#568203';
 const earthBrown = '#5D3A1A';
 const ochreYellow = '#CC7722';
 const dustyTeal = '#3B7A57';
+
+// + + + + + + + + + + + + + + HELPER FUNCTIONS + + + + + + + + + + + + + + + +
+
+// + + + + + + + GRID SIZE CALCULATION + + + + + + + + +
+
+function calculatePixelHeight(activeScreenResolution) {
+  const pixelsPerRow = activeScreenResolution;
+
+  return parseFLOAT(drawingScreenWidth / pixelsPerRow);
+}
+
+// + + + + + + + GET COLOURS + + + + + + + + +
+
+function getColors() {
+  const number = Math.floor(Math.random() * 6) + 1;
+
+  if (number === 1) {
+    return harvestGold;
+  } else if (number === 2) {
+    return burntOrange;
+  } else if (number === 3) {
+    return avocadoGreen;
+  } else if (number === 4) {
+    return earthBrown;
+  } else if (number === 5) {
+    return ochreYellow;
+  } else {
+    return dustyTeal;
+  }
+}
