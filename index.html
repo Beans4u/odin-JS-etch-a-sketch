@@ -9,32 +9,54 @@
   <body>
     <div id="etch-a-sketch-container">
       <div class="toy-surface">
-        <h1 class="logo magic-screen-logo">MAGIC</h1>
-        <h1 class="logo etch-a-sketch-logo">Etch-a-Sketch</h1>
-        <h1 class="logo magic-screen-logo">SCREEN</h1>
+        <div class="logo-container">
+          <h1 class="logo magic-screen-logo">MAGIC</h1>
+          <h1 class="logo etch-a-sketch-logo">Etch-a-Sketch</h1>
+          <h1 class="logo magic-screen-logo">SCREEN</h1>
+        </div>
 
+        <!-- PIXEL GRID GENERATION -->
         <div class="drawing-screen"></div>
 
-        <div id="toy-control-panel">
-          <form>
-            <button class="btn-set-resolution"></button>
-            <input
-              id="screen-controls"
-              class="custom-screen-resolution"
-            />
-            <label for="screen-controls"
-              >Enter a custom screen resolution</label
-            >
+        <div id="toy-control-panel-container">
+          <!-- LEFT-ALIGN -->
+          <div id="btn-set-resolution-container">
+            <form class="control-form">
+              <button
+                type="button"
+                class="btn-set-resolution btn-knob"
+              ></button>
 
-            <button class="btn-shake-toy"></button>
-            <p class="shake-toy-text">shake! (erase your image)</p>
+              <div id="input-label-container">
+                <label for="screen-controls">Pixel size</label>
+                <input id="screen-controls" class="custom-screen-resolution" />
+              </div>
+            </form>
+          </div>
 
-            <button class="btn-multicolor-toggle"></button>
-            <p class="multicolor-status-label">Toggle Multicolor</p>
-          </form>
+          <!-- MIDDLE-ALIGN -->
+          <div id="btn-shake-toy-container">
+            <form class="control-form">
+              <button type="button" class="btn-shake-toy"></button>
+              <p class="shake-toy-text">shake!</p>
+            </form>
+          </div>
+
+          <!-- RIGHT-ALIGNT -->
+          <div id="btn-multicolor-toggle-container">
+            <form class="control-form">
+              <button
+                type="button"
+                class="btn-multicolor-toggle btn-knob"
+              ></button>
+              <p class="multicolor-status-text">Multicolor</p>
+            </form>
+          </div>
         </div>
+        <!-- end of toy-control-panel-container div -->
       </div>
-      </div>
+      <!-- end of toy-surface div -->
     </div>
+    <!-- end of etch-a-sketch-container div -->
   </body>
 </html>
