@@ -60,3 +60,30 @@ function getColors() {
     return dustyTeal;
   }
 }
+
+// + + + + + + + + + + + + + + PIXEL GRID GENERATION LOGIC + + + + + + + + + + + + + + + +
+
+// + + + + + + + GENERATE PIXEL DIVS + + + + + + + + +
+
+function generatePixels(newScreenResolution = DEFAULT_SCREEN_RESOLUTION) {
+  const screenResolution = newScreenResolution;
+
+  const pixelHeight = calculatePixelHeight(screenResolution);
+
+  drawingScreen.height = pixelHeight;
+
+  let totalPixels = screenResolution ** 2;
+
+  // + + + Generate pixel grid and print to web page + + +
+  for (let i = totalPixels; i > 0; i--) {
+    let screenPixels = document.createElement('div');
+    drawingScreen.appendChild(screenPixels);
+  }
+
+  return;
+}
+// + + + + + + + CLEAR PIXEL DIVS + + + + + + + + +
+
+function removePixels() {
+  drawingScreen.removeChildren();
+}
