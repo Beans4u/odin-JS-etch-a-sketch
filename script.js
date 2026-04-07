@@ -139,3 +139,6 @@ btnShakeToy.addEventListener('click', function handleShakeToy(event) {
   removePixels();
   generatePixels(activeScreenResolution);
 });
+
+// + + + On page load, generate grid + + +
+generatePixels(customScreenResolution);
