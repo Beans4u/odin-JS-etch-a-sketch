@@ -39,7 +39,7 @@ const dustyTeal = '#3B7A57';
 function calculatePixelHeight(activeScreenResolution) {
   const pixelsPerRow = activeScreenResolution;
 
-  return parseFLOAT(drawingScreenWidth / pixelsPerRow);
+  return parseFloat(drawingScreenWidth / pixelsPerRow);
 }
 
 // + + + + + + + GET COLOURS + + + + + + + + +
