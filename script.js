@@ -16,12 +16,10 @@ const btnShakeToy = document.getElementsByClassName('btn-shake-toy')[0];
 let multicolorStatusLabel = document.getElementsByClassName(
   'multicolor-status-text'
 )[0];
-console.log('testing: ', multicolorStatusLabel);
 
 // To calculate number of divs per row we need the screen size.
 const drawingScreenWidth = getComputedStyle(drawingScreen);
 const DEFAULT_SCREEN_RESOLUTION = parseFloat(drawingScreenWidth.width);
-
 let activeScreenResolution = DEFAULT_SCREEN_RESOLUTION;
 
 // Global VAR colours: Pixel Paint Grayscale and Colours
@@ -40,9 +38,9 @@ const dustyTeal = '#3B7A57';
 // + + + + + + + GRID SIZE CALCULATION + + + + + + + + +
 
 function calculatePixelHeight(activeScreenResolution) {
-  const pixelsPerRow = activeScreenResolution;
-
-  return parseFloat(drawingScreenWidth / pixelsPerRow);
+  const pixelsPerRow = activeScreenResolution.value;
+  console.log('pixels per row: ', pixelsPerRow);
+  return parseFloat(drawingScreenWidth.width) / pixelsPerRow;
 }
 
 // + + + + + + + GET COLOURS + + + + + + + + +
@@ -68,9 +66,11 @@ function getColors() {
 // + + + + + + + + + + + + + + PIXEL GRID GENERATION LOGIC + + + + + + + + + + + + + + + +
 
 // + + + + + + + GENERATE PIXEL DIVS + + + + + + + + +
-
+console.log('DEFAULT : ', DEFAULT_SCREEN_RESOLUTION);
 function generatePixels(newScreenResolution = DEFAULT_SCREEN_RESOLUTION) {
+  console.log('newScreenResolution: ', newScreenResolution);
   const screenResolution = newScreenResolution;
+  console.log('screenResolution: ', screenResolution);
 
   const pixelHeight = calculatePixelHeight(screenResolution);
 
