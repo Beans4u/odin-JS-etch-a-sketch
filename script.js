@@ -13,7 +13,10 @@ const btnMulticolorToggle = document.getElementsByClassName(
   'btn-multicolor-toggle'
 )[0];
 const btnShakeToy = document.getElementsByClassName('btn-shake-toy')[0];
-const multicolorStatusLabel = document.getElementById('multicolor-status-text');
+let multicolorStatusLabel = document.getElementsByClassName(
+  'multicolor-status-text'
+)[0];
+console.log('testing: ', multicolorStatusLabel);
 
 // To calculate number of divs per row we need the screen size.
 const drawingScreenWidth = getComputedStyle(drawingScreen);
@@ -144,4 +147,4 @@ btnShakeToy.addEventListener('click', function handleShakeToy(event) {
 });
 
 // + + + On page load, generate grid + + +
-generatePixels(customScreenResolution);
+generatePixels(customScreenResolution.value);
