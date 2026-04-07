@@ -18,8 +18,10 @@ let multicolorStatusLabel = document.getElementsByClassName(
 )[0];
 
 // To calculate number of divs per row we need the screen size.
-const drawingScreenWidth = getComputedStyle(drawingScreen);
-const DEFAULT_SCREEN_RESOLUTION = parseFloat(drawingScreenWidth.width);
+const screenStyles = getComputedStyle(drawingScreen);
+const drawingScreenWidth = parseFloat(screenStyles.width);
+
+const DEFAULT_SCREEN_RESOLUTION = 16; // assignment constraint
 let activeScreenResolution = DEFAULT_SCREEN_RESOLUTION;
 
 // Global VAR colours: Pixel Paint Grayscale and Colours
@@ -38,9 +40,9 @@ const dustyTeal = '#3B7A57';
 // + + + + + + + GRID SIZE CALCULATION + + + + + + + + +
 
 function calculatePixelHeight(activeScreenResolution) {
-  const pixelsPerRow = activeScreenResolution.value;
-  console.log('pixels per row: ', pixelsPerRow);
-  return parseFloat(drawingScreenWidth.width) / pixelsPerRow;
+  const pixelsPerRow = activeScreenResolution;
+
+  return parseFloat(drawingScreenWidth) / pixelsPerRow;
 }
 
 // + + + + + + + GET COLOURS + + + + + + + + +
@@ -66,11 +68,9 @@ function getColors() {
 // + + + + + + + + + + + + + + PIXEL GRID GENERATION LOGIC + + + + + + + + + + + + + + + +
 
 // + + + + + + + GENERATE PIXEL DIVS + + + + + + + + +
-console.log('DEFAULT : ', DEFAULT_SCREEN_RESOLUTION);
+
 function generatePixels(newScreenResolution = DEFAULT_SCREEN_RESOLUTION) {
-  console.log('newScreenResolution: ', newScreenResolution);
   const screenResolution = newScreenResolution;
-  console.log('screenResolution: ', screenResolution);
 
   const pixelHeight = calculatePixelHeight(screenResolution);
 
@@ -81,6 +81,7 @@ function generatePixels(newScreenResolution = DEFAULT_SCREEN_RESOLUTION) {
   // + + + Generate pixel grid and print to web page + + +
   for (let i = totalPixels; i > 0; i--) {
     let screenPixels = document.createElement('div');
+    screenPixels.classList.add('screen-pixels');
     drawingScreen.appendChild(screenPixels);
   }
 
@@ -106,7 +107,7 @@ customScreenResolution.addEventListener(
 
     const newScreenResolution = +event.target.value;
     // (convert to number with +, returns NaN if invalid number)
-    console.log(newScreenResolution);
+
     if (newScreenResolution === isNaN(newScreenResolution)) {
       return alert(
         `There was an error generating your grid. Received new screen resolution of: ${newScreenResolution}`
@@ -147,4 +148,4 @@ btnShakeToy.addEventListener('click', function handleShakeToy(event) {
 });
 
 // + + + On page load, generate grid + + +
-generatePixels(customScreenResolution.value);
+generatePixels();
