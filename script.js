@@ -6,12 +6,13 @@ let isMulticolor = false;
 const drawingScreen = document.getElementsByClassName('drawing-screen')[0];
 const customScreenResolution = document.getElementsByClassName(
   'custom-screen-resolution'
-);
+)[0];
+
 const btnSetResolution = document.getElementById('set-resolution-container');
 const btnMulticolorToggle = document.getElementsByClassName(
   'btn-multicolor-toggle'
-);
-const btnShakeToy = document.getElementsByClassName('btn-shake-toy');
+)[0];
+const btnShakeToy = document.getElementsByClassName('btn-shake-toy')[0];
 const multicolorStatusLabel = document.getElementById('multicolor-status-text');
 
 // To calculate number of divs per row we need the screen size.
