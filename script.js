@@ -40,9 +40,7 @@ const dustyTeal = '#3B7A57';
 // + + + + + + + GRID SIZE CALCULATION + + + + + + + + +
 
 function calculatePixelHeight(activeScreenResolution) {
-  const pixelsPerRow = activeScreenResolution;
-
-  return parseFloat(drawingScreenWidth) / pixelsPerRow;
+  return 100 / activeScreenResolution;
 }
 
 // + + + + + + + GET COLOURS + + + + + + + + +
@@ -72,21 +70,30 @@ function getColors() {
 function generatePixels(newScreenResolution = DEFAULT_SCREEN_RESOLUTION) {
   const screenResolution = newScreenResolution;
 
+  // changed to percentage to get around browser rounding for pixel height fractions
   const pixelHeight = calculatePixelHeight(screenResolution);
 
-  drawingScreen.height = pixelHeight;
+  drawingScreen.width = pixelHeight;
 
   let totalPixels = screenResolution ** 2;
 
   // + + + Generate pixel grid and print to web page + + +
-  for (let i = totalPixels; i > 0; i--) {
-    let screenPixels = document.createElement('div');
-    screenPixels.classList.add('screen-pixels');
-    drawingScreen.appendChild(screenPixels);
+  for (let i = 0; i < totalPixels; i++) {
+    let screenPixel = document.createElement('div');
+
+    screenPixel.style.flex = `0 0 ${pixelHeight}%`;
+    screenPixel.style.height = `${pixelHeight}%`;
+
+    // screenPixel.style.backgroundColor = 'teal'; // DELETE ONCE SOLVED
+    screenPixel.style.outline = '0.1px solid rgb(255, 251, 0)';
+
+    drawingScreen.appendChild(screenPixel);
+    console.log(screenPixel);
   }
 
   return;
 }
+
 // + + + + + + + CLEAR PIXEL DIVS + + + + + + + + +
 
 function removePixels() {
@@ -139,13 +146,6 @@ btnMulticolorToggle.addEventListener(
     }
   }
 );
-
-// + + + + + + + ERASE SCREEN AND MAINTAIN ACTIVE PIXELS + + + + + + + + +
-
-btnShakeToy.addEventListener('click', function handleShakeToy(event) {
-  removePixels();
-  generatePixels(activeScreenResolution);
-});
 
 // + + + On page load, generate grid + + +
 generatePixels();
