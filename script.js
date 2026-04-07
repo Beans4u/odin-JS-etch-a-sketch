@@ -87,3 +87,55 @@ function generatePixels(newScreenResolution = DEFAULT_SCREEN_RESOLUTION) {
 function removePixels() {
   drawingScreen.removeChildren();
 }
+
+// + + + + + + + + + + + + + + EVENT LISTENERS + + + + + + + + + + + + + + + +
+
+// + + + + + + + CUSTOM SCREEN GENERATION + + + + + + + + +
+
+customScreenResolution.addEventListener(
+  'change',
+  function handleCustomScreenResolution(event) {
+    // Need to prevent default IF using the SUBMIT event, if CHANGE then no.
+    // event.preventDefault();
+
+    const newScreenResolution = +event.target.value;
+    // (convert to number with +, returns NaN if invalid number)
+
+    if (newScreenResolution === isNaN(newScreenResolution)) {
+      return alert(
+        `There was an error generating your grid. Received new screen resolution of: ${newScreenResolution}`
+      );
+    } else if (newScreenResolution < 4 || newScreenResolution > 100) {
+      return alert(
+        `The screen resolution must be between 4 and 100. Received: ${newScreenResolution}`
+      );
+    }
+
+    activeScreenResolution = newScreenResolution;
+
+    removePixels();
+    generatePixels(newScreenResolution);
+  }
+);
+
+// + + + + + + + TOGGLE MULTICOLOR ON/OFF + + + + + + + + +
+
+btnMulticolorToggle.addEventListener(
+  'click',
+  function handleToggleMulticolor(event) {
+    if (isMulticolor === false) {
+      isMulticolor = true;
+      multicolorStatusLabel.textContent = 'Grayscale';
+    } else {
+      isMulticolor = false;
+      multicolorStatusLabel.textContent = 'Multicolor';
+    }
+  }
+);
+
+// + + + + + + + ERASE SCREEN AND MAINTAIN ACTIVE PIXELS + + + + + + + + +
+
+btnShakeToy.addEventListener('click', function handleShakeToy(event) {
+  removePixels();
+  generatePixels(activeScreenResolution);
+});
