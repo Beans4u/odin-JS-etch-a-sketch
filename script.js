@@ -84,9 +84,6 @@ function generatePixels(newScreenResolution = DEFAULT_SCREEN_RESOLUTION) {
     screenPixel.style.flex = `0 0 ${pixelHeight}%`;
     screenPixel.style.height = `${pixelHeight}%`;
 
-    // screenPixel.style.backgroundColor = 'teal'; // DELETE ONCE SOLVED
-    screenPixel.style.outline = '0.1px solid rgb(255, 251, 0)';
-
     drawingScreen.appendChild(screenPixel);
     console.log(screenPixel);
   }
@@ -109,9 +106,6 @@ function removePixels() {
 customScreenResolution.addEventListener(
   'change',
   function handleCustomScreenResolution(event) {
-    // Need to prevent default IF using the SUBMIT event, if CHANGE then no.
-    // event.preventDefault();
-
     const newScreenResolution = +event.target.value;
     // (convert to number with +, returns NaN if invalid number)
 
