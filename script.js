@@ -86,7 +86,9 @@ function generatePixels(newScreenResolution = DEFAULT_SCREEN_RESOLUTION) {
 // + + + + + + + CLEAR PIXEL DIVS + + + + + + + + +
 
 function removePixels() {
-  drawingScreen.removeChildren();
+  while (drawingScreen.firstChild) {
+    drawingScreen.removeChild(drawingScreen.firstChild);
+  }
 }
 
 // + + + + + + + + + + + + + + EVENT LISTENERS + + + + + + + + + + + + + + + +
@@ -101,7 +103,7 @@ customScreenResolution.addEventListener(
 
     const newScreenResolution = +event.target.value;
     // (convert to number with +, returns NaN if invalid number)
-
+    console.log(newScreenResolution);
     if (newScreenResolution === isNaN(newScreenResolution)) {
       return alert(
         `There was an error generating your grid. Received new screen resolution of: ${newScreenResolution}`
