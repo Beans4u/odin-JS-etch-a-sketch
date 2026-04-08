@@ -24,16 +24,16 @@ const drawingScreenWidth = parseFloat(screenStyles.width);
 const DEFAULT_SCREEN_RESOLUTION = 16; // assignment constraint
 let activeScreenResolution = DEFAULT_SCREEN_RESOLUTION;
 
-// Global VAR colours: Pixel Paint Grayscale and Colours
+// Global variable colours: Pixel Paint Grayscale and Colours
 
-const penGray = '#333333';
+const penGray = '51, 51, 51';
 
-const harvestGold = '#DAA520';
-const burntOrange = '#CC5500';
-const avocadoGreen = '#568203';
-const earthBrown = '#5D3A1A';
-const ochreYellow = '#CC7722';
-const dustyTeal = '#3B7A57';
+const harvestGold = '218, 165, 32';
+const burntOrange = '204, 85, 0';
+const avocadoGreen = '86, 130, 3';
+const earthBrown = '93, 58, 26';
+const ochreYellow = '204, 119, 34';
+const dustyTeal = '59, 122, 87';
 
 // + + + + + + + + + + + + + + HELPER FUNCTIONS + + + + + + + + + + + + + + + +
 
@@ -80,12 +80,13 @@ function generatePixels(newScreenResolution = DEFAULT_SCREEN_RESOLUTION) {
   // + + + Generate pixel grid and print to web page + + +
   for (let i = 0; i < totalPixels; i++) {
     let screenPixel = document.createElement('div');
+    screenPixel.classList.add('screen-pixels');
 
+    // + + + Constrain pixel grid to equal distribution in rows and columns + + +
     screenPixel.style.flex = `0 0 ${pixelHeight}%`;
     screenPixel.style.height = `${pixelHeight}%`;
 
     drawingScreen.appendChild(screenPixel);
-    console.log(screenPixel);
   }
 
   return;
@@ -141,5 +142,44 @@ btnMulticolorToggle.addEventListener(
   }
 );
 
-// + + + On page load, generate grid + + +
+// + + + + + + + ERASE SCREEN AND MAINTAIN ACTIVE PIXELS + + + + + + + + +
+
+btnShakeToy.addEventListener('click', function handleShakeToy(event) {
+  removePixels();
+  generatePixels(activeScreenResolution);
+});
+
+// + + + + + + + PAINT PIXELS + + + + + + + + +
+
+drawingScreen.addEventListener('mouseover', function handlePaintPixels(event) {
+  if (!event.target.classList.contains('screen-pixels')) return;
+
+  const pixel = event.target;
+
+  let currentAlpha = parseFloat(pixel.dataset.alpha) || 0; //in case it's empty
+  let newAlpha = Math.min(currentAlpha + 0.1, 1);
+  pixel.dataset.alpha = newAlpha;
+
+  console.log(
+    'alpha: ',
+    newAlpha,
+    'current target alpha: ',
+    pixel.dataset.currentAlpha
+  );
+
+  // + + + Change backgroundColor to random color or grayscale, apply opacity + + +
+  if (isMulticolor) {
+    if (!pixel.dataset.color) {
+      pixel.dataset.color = getColors();
+    }
+    pixel.style.backgroundColor = `rgba(
+      ${pixel.dataset.color},
+      ${newAlpha}
+    )`;
+  } else {
+    pixel.style.backgroundColor = `rgba(${penGray}, ${newAlpha})`;
+  }
+});
+
+// + + + + + + + ON PAGE LOAD, GENERATE GRID + + + + + + + + +
 generatePixels();
