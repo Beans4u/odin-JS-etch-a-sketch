@@ -17,10 +17,6 @@ let multicolorStatusLabel = document.getElementsByClassName(
   'multicolor-status-text'
 )[0];
 
-// To calculate number of divs per row we need the screen size.
-const screenStyles = getComputedStyle(drawingScreen);
-const drawingScreenWidth = parseFloat(screenStyles.width);
-
 const DEFAULT_SCREEN_RESOLUTION = 16; // assignment constraint
 let activeScreenResolution = DEFAULT_SCREEN_RESOLUTION;
 
@@ -73,8 +69,6 @@ function generatePixels(newScreenResolution = DEFAULT_SCREEN_RESOLUTION) {
   // changed to percentage to get around browser rounding for pixel height fractions
   const pixelHeight = calculatePixelHeight(screenResolution);
 
-  drawingScreen.width = pixelHeight;
-
   let totalPixels = screenResolution ** 2;
 
   // + + + Generate pixel grid and print to web page + + +
@@ -110,7 +104,7 @@ customScreenResolution.addEventListener(
     const newScreenResolution = +event.target.value;
     // (convert to number with +, returns NaN if invalid number)
 
-    if (newScreenResolution === isNaN(newScreenResolution)) {
+    if (isNaN(newScreenResolution)) {
       return alert(
         `There was an error generating your grid. Received new screen resolution of: ${newScreenResolution}`
       );
