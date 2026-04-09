@@ -12,7 +12,7 @@ This project focuses on building an interactive grid-based drawing tool in order
 Users can interact with a grid to create simple drawings directly in the browser.
 
 **Live Demo**  
-[Demo Live Link Placeholder]()
+[Demo Live Link](https://beans4u.github.io/odin-JS-etch-a-sketch/)
 
 ## Learning Objectives
 
